@@ -1,14 +1,38 @@
 import java.util.Objects;
 
 public class Task {
-    public String name;
-    public String details;
+    protected String name;
+    protected String details;
     private int identityNumber;
-    public TaskStatus status;
+    protected TaskStatus status;
 
     public Task(String name, String details, TaskStatus status) {
         this.name = name;
         this.details = details;
+        this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 

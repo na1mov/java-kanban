@@ -16,30 +16,35 @@ public class Main {
         manager.addTask(secondTask);
         manager.addEpic(firstEpic);
         manager.addEpic(secondEpic);
-        manager.addSubtask(firstEpic, firstSubtask);
-        manager.addSubtask(firstEpic, secondSubtask);
-        manager.addSubtask(secondEpic, thirdSubtask);
+        firstSubtask.setEpicId(firstEpic.getId());
+        secondSubtask.setEpicId(firstEpic.getId());
+        manager.addSubtask(firstSubtask);
+        manager.addSubtask(secondSubtask);
+        thirdSubtask.setEpicId(secondEpic.getId());
+        manager.addSubtask(thirdSubtask);
 
         System.out.println(manager.getAllRegularTasks());
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllSubTasks());
-        System.out.println(manager.getEpicSubtasks(firstEpic));
-        System.out.println(manager.getTaskById(firstEpic.getId()));
+        System.out.println(manager.getEpicSubtasks(firstEpic.getId()));
+        System.out.println(manager.getEpicById(firstEpic.getId()));
         System.out.println("=".repeat(75));
 
         Subtask updFirstSubtask = new Subtask("Обновленная первая подзадача",
                 "Сделать первую часть эпика 1 по-другому", TaskStatus.IN_PROGRESS);
         Subtask updThirdSubtask = new Subtask("Обновленная третья подзачада",
                 "Подзадача выполнена", TaskStatus.DONE);
-        manager.updateTaskById(firstSubtask.getId(), updFirstSubtask);
-        manager.updateTaskById(thirdSubtask.getId(), updThirdSubtask);
+        updFirstSubtask.setIdentityNumber(firstSubtask.getId());
+        updThirdSubtask.setIdentityNumber(thirdSubtask.getId());
+        manager.updateSubtaskById(updFirstSubtask);
+        manager.updateSubtaskById(updThirdSubtask);
 
         System.out.println(manager.getAllRegularTasks());
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllSubTasks());
-        System.out.println(manager.getEpicSubtasks(firstEpic));
-        System.out.println(manager.getEpicSubtasks(secondEpic));
-        System.out.println(manager.getTaskById(secondEpic.getId()));
+        System.out.println(manager.getEpicSubtasks(firstEpic.getId()));
+        System.out.println(manager.getEpicSubtasks(secondEpic.getId()));
+        System.out.println(manager.getEpicById(secondEpic.getId()));
         System.out.println("=".repeat(75));
 
         manager.removeTaskById(secondEpic.getId());
