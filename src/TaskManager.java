@@ -1,10 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/* Судя по условию задачи большая часть проверок на null и на диапазон ID скорее всего будут не нужны,
- * т.к. пользователь будет контактировать непосредственно с интерфейсом программы, где отображаются актуальные задачи,
- * но на данном этапе прототипа решил их добавить, как заглушки, для большей наглядности :) */
-
 public class TaskManager {
     private int identityNumber = 1;
     private HashMap<Integer, Task> regularTasks;
@@ -51,7 +47,6 @@ public class TaskManager {
 
     public void addTask(Task task) {
         if (task == null || !task.getClass().getSimpleName().equals("Task")) {
-            // добавил проверку на принадлежность, чтоб случайно не внесли эпик или подзадачу
             System.out.println("Ошибка ввода задачи");
         } else {
             setId(task);
@@ -80,6 +75,7 @@ public class TaskManager {
         setId(subtask);
         subTasks.put(subtask.getId(), subtask);
         epicTasks.get(subtask.getEpicId()).setSubtask(subtask);
+        checkEpicStatus(epicTasks.get(subtask.getEpicId()));
     }
 
     public ArrayList<Task> getAllRegularTasks() {
@@ -124,7 +120,7 @@ public class TaskManager {
             subTasks.clear();
             for (Epic epic : epicTasks.values()) {
                 epic.setEpicSubTasks(null);
-                epic.checkStatus();
+                checkEpicStatus(epic);
             }
         }
 
@@ -191,6 +187,7 @@ public class TaskManager {
             subTasks.remove(subtask.getId());
             subtask.setEpicId(tempEpicId);
             epicTasks.get(tempEpicId).setSubtask(subtask);
+            checkEpicStatus(epicTasks.get(tempEpicId));
             subTasks.put(subtask.getId(), subtask);
         }
     }
@@ -211,6 +208,7 @@ public class TaskManager {
             epicTasks.remove(id);
         } else if (subTasks.containsKey(id)) {
             epicTasks.get(subTasks.get(id).getEpicId()).removeSubtask(subTasks.get(id));
+            checkEpicStatus(epicTasks.get(subTasks.get(id).getEpicId()));
             subTasks.remove(id);
         } else {
             System.out.println("Задача уже была удалена ранее");
@@ -227,5 +225,36 @@ public class TaskManager {
             return null;
         }
         return epicTasks.get(id).getEpicSubTasks();
+    }
+
+    public void checkEpicStatus(Epic epic) {
+        if (epic.getEpicSubTasks() == null) {
+            epic.setStatus(TaskStatus.DONE);
+            return;
+        }
+
+        boolean isNew = false;
+        boolean isDone = false;
+
+        for (Subtask sub : epic.getEpicSubTasks()) {
+            if (!sub.status.equals(TaskStatus.NEW)) {
+                isNew = true;
+                break;
+            }
+        }
+        for (Subtask sub : epic.getEpicSubTasks()) {
+            if (!sub.status.equals(TaskStatus.DONE)) {
+                isDone = true;
+                break;
+            }
+        }
+
+        if (!isDone) {
+            epic.setStatus(TaskStatus.DONE);
+        } else if (!isNew) {
+            epic.setStatus(TaskStatus.NEW);
+        } else {
+            epic.setStatus(TaskStatus.IN_PROGRESS);
+        }
     }
 }
