@@ -1,3 +1,6 @@
+package service;
+
+import model.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -237,13 +240,13 @@ public class TaskManager {
         boolean isDone = false;
 
         for (Subtask sub : epic.getEpicSubTasks()) {
-            if (!sub.status.equals(TaskStatus.NEW)) {
+            if (!sub.getStatus().equals(TaskStatus.NEW)) {
                 isNew = true;
                 break;
             }
         }
         for (Subtask sub : epic.getEpicSubTasks()) {
-            if (!sub.status.equals(TaskStatus.DONE)) {
+            if (!sub.getStatus().equals(TaskStatus.DONE)) {
                 isDone = true;
                 break;
             }
