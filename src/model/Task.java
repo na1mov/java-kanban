@@ -3,8 +3,8 @@ package model;
 import java.util.Objects;
 
 public class Task {
-    protected String name;
-    protected String details;
+    protected final String name;
+    protected final String details;
     private int identityNumber;
     protected TaskStatus status;
 
@@ -18,16 +18,8 @@ public class Task {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDetails() {
         return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 
     public TaskStatus getStatus() {

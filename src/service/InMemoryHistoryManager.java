@@ -6,22 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private List<Task> taskHistory;
+    private final List<Task> taskHistory = new ArrayList<>();
 
-    public InMemoryHistoryManager() {
-        taskHistory = new ArrayList<>();
-    }
+    /*
+        На всех предыдущих семинарах выносили инициализацию в конструктор, даже если было всего пара активных полей,
+        честно говоря знал, что можно сразу инициализировать, но думал, что так не принято. Исправил:)
 
-    public List<Task> getTaskHistory() {
-        return taskHistory;
-    }
+        По поводу LinkedList, я уже читал про него на стороннем ресурсе и даже делал задание на реализацию добавления
+        нового элемента:) Структурно он похож на очередь, где каждый элемент помимо значения имеет ссылки на prev/next
+        и добавление нового элемента будет действительно быстрее, т.к. по сути нужно просто заменить ссылки у соседних
+        элементов, но в следующем спринте нам надо будет избавляться от дублей в истории запросов, а поиск элемента у
+        LinkedList оч сильно уступает по скорости тому же ArrayList, который, если я верно понял, теперь реализует
+        команду сдвига быстрой командой System.arraycopy(), т.к. все элементы массива находятся рядом в одном блоке
+        памяти. Примерно такой логикой руководствовался при выборе списка, конечно могу быть не прав, поменяю
+        на LinkedList без лишних вопросов, но нужно ли?:)
 
-    public void setTaskHistory(List<Task> taskHistory) {
-        this.taskHistory = taskHistory;
-    }
-
+        Проставил модификатор final полям, которые на данный момент не изменяются функционалом приложения, методы
+        и классы не стал трогать, т.к. пока нет понимания, какие классы будут иметь наследников, а какие нет)
+    */
     @Override
     public void add(Task task) {
+        if (task == null) {
+            System.out.println("Ошибка ввода. Возможно задача была удалена.");
+            return;
+        }
         taskHistory.add(task);
         if (taskHistory.size() > 10) {
             taskHistory.remove(0);

@@ -8,11 +8,11 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int identityNumber = 1;
-    private HashMap<Integer, Task> regularTasks;
-    private HashMap<Integer, Epic> epicTasks;
-    private HashMap<Integer, Subtask> subTasks;
+    private final HashMap<Integer, Task> regularTasks;
+    private final HashMap<Integer, Epic> epicTasks;
+    private final HashMap<Integer, Subtask> subTasks;
 
-    private HistoryManager historyManager;
+    private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         regularTasks = new HashMap<>();
@@ -33,32 +33,16 @@ public class InMemoryTaskManager implements TaskManager {
         return regularTasks;
     }
 
-    public void setRegularTasks(HashMap<Integer, Task> regularTasks) {
-        this.regularTasks = regularTasks;
-    }
-
     public HashMap<Integer, Epic> getEpicTasks() {
         return epicTasks;
-    }
-
-    public void setEpicTasks(HashMap<Integer, Epic> epicTasks) {
-        this.epicTasks = epicTasks;
     }
 
     public HashMap<Integer, Subtask> getSubTasks() {
         return subTasks;
     }
 
-    public void setSubTasks(HashMap<Integer, Subtask> subTasks) {
-        this.subTasks = subTasks;
-    }
-
     public HistoryManager getHistoryManager() {
         return historyManager;
-    }
-
-    public void setHistoryManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
     }
 
     @Override
@@ -144,7 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTasks != null) {
             subTasks.clear();
             for (Epic epic : epicTasks.values()) {
-                epic.setEpicSubTasks(null);
+                epic.clearEpicSubTasks();
                 checkEpicStatus(epic);
             }
         }
@@ -181,8 +165,7 @@ public class InMemoryTaskManager implements TaskManager {
         return subTasks.getOrDefault(id, null);
     }
 
-    @Override
-    public void setId(Task task) {
+    private void setId(Task task) {
         task.setIdentityNumber(identityNumber);
         identityNumber++;
     }
