@@ -111,6 +111,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllRegularTasks() {
         if (regularTasks != null) {
+            for (Integer i : regularTasks.keySet()) {
+                historyManager.remove(i);
+            }
             regularTasks.clear();
         }
     }
@@ -118,14 +121,20 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllEpics() {
         if (epicTasks != null) {
+            for (Integer i : epicTasks.keySet()) {
+                historyManager.remove(i);
+            }
+            removeAllSubTasks();
             epicTasks.clear();
         }
-        removeAllSubTasks();
     }
 
     @Override
     public void removeAllSubTasks() {
         if (subTasks != null) {
+            for (Integer i : subTasks.keySet()) {
+                historyManager.remove(i);
+            }
             subTasks.clear();
             for (Epic epic : epicTasks.values()) {
                 epic.clearEpicSubTasks();
@@ -177,7 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         if (regularTasks.containsKey(task.getId())) {
-            regularTasks.remove(task.getId());
+            removeTaskById(task.getId());
             regularTasks.put(task.getId(), task);
         }
     }
@@ -189,7 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         if (epicTasks.containsKey(epic.getId())) {
-            epicTasks.remove(epic.getId());
+            removeTaskById(epic.getId());
             epicTasks.put(epic.getId(), epic);
         }
     }
@@ -202,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (subTasks.containsKey(subtask.getId())) {
             int tempEpicId = subTasks.get(subtask.getId()).getEpicId();
-            subTasks.remove(subtask.getId());
+            removeTaskById(subtask.getId());
             subtask.setEpicId(tempEpicId);
             epicTasks.get(tempEpicId).setSubtask(subtask);
             checkEpicStatus(epicTasks.get(tempEpicId));
@@ -218,17 +227,20 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (regularTasks.containsKey(id)) {
             regularTasks.remove(id);
+            historyManager.remove(id);
         } else if (epicTasks.containsKey(id)) {
-            for (Subtask subtask : subTasks.values()) {
+            for (Subtask subtask : epicTasks.get(id).getEpicSubTasks()) {
                 if (subtask.getEpicId() == id) {
                     removeTaskById(subtask.getId());
                 }
             }
             epicTasks.remove(id);
+            historyManager.remove(id);
         } else if (subTasks.containsKey(id)) {
             epicTasks.get(subTasks.get(id).getEpicId()).removeSubtask(subTasks.get(id));
             checkEpicStatus(epicTasks.get(subTasks.get(id).getEpicId()));
             subTasks.remove(id);
+            historyManager.remove(id);
         } else {
             System.out.println("Задача уже была удалена ранее");
         }

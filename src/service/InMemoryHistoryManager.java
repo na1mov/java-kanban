@@ -1,39 +1,29 @@
 package service;
 
-import model.Task;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> taskHistory = new ArrayList<>();
+    private final Map<Integer, Node> taskHistory = new HashMap<>();
+    private final Node first = new Node();
+    private final Node last = new Node();
 
-    /*
-        На всех предыдущих семинарах выносили инициализацию в конструктор, даже если было всего пара активных полей,
-        честно говоря знал, что можно сразу инициализировать, но думал, что так не принято. Исправил:)
 
-        По поводу LinkedList, я уже читал про него на стороннем ресурсе и даже делал задание на реализацию добавления
-        нового элемента:) Структурно он похож на очередь, где каждый элемент помимо значения имеет ссылки на prev/next
-        и добавление нового элемента будет действительно быстрее, т.к. по сути нужно просто заменить ссылки у соседних
-        элементов, но в следующем спринте нам надо будет избавляться от дублей в истории запросов, а поиск элемента у
-        LinkedList оч сильно уступает по скорости тому же ArrayList, который, если я верно понял, теперь реализует
-        команду сдвига быстрой командой System.arraycopy(), т.к. все элементы массива находятся рядом в одном блоке
-        памяти. Примерно такой логикой руководствовался при выборе списка, конечно могу быть не прав, поменяю
-        на LinkedList без лишних вопросов, но нужно ли?:)
-
-        Проставил модификатор final полям, которые на данный момент не изменяются функционалом приложения, методы
-        и классы не стал трогать, т.к. пока нет понимания, какие классы будут иметь наследников, а какие нет)
-    */
     @Override
     public void add(Task task) {
         if (task == null) {
             System.out.println("Ошибка ввода. Возможно задача была удалена.");
             return;
         }
-        taskHistory.add(task);
-        if (taskHistory.size() > 10) {
-            taskHistory.remove(0);
+        if (taskHistory.containsKey(task.getId())) {
+            remove(task.getId());
         }
+        linkLast(task);
+        taskHistory.put(task.getId(), last.getPrev());
     }
 
     @Override
@@ -42,6 +32,53 @@ public class InMemoryHistoryManager implements HistoryManager {
             System.out.println("Ошибка, история отсутствует");
             return null;
         }
-        return taskHistory;
+        return getTasks();
+    }
+
+    @Override
+    public void remove(int id) {
+        if (taskHistory.containsKey(id)) {
+            removeNode(taskHistory.get(id));
+            taskHistory.remove(id);
+        }
+    }
+
+    private void removeNode(Node node) {
+        node.getPrev().setNext(node.getNext());
+        node.getNext().setPrev(node.getPrev());
+    }
+
+    /* Хотел создать отдельный класс для CustomLinkedList, но решил реализовать методы linkLast() и getTasks() в классе
+     * InMemoryHistoryManager, т.к. по заданию было указано "Отдельный класс для списка создавать не нужно — реализуйте
+     * его прямо в классе InMemoryHistoryManager." Возможно не так понял) */
+    private void linkLast(Task task) {
+        Node node = new Node();
+        if (first.getNext() == null) {
+            node.setTask(task);
+            first.setNext(node);
+            node.setPrev(first);
+        }
+        if (last.getPrev() == null) {
+            last.setPrev(node);
+            node.setNext(last);
+            return;
+        }
+
+        node.setTask(task);
+        Node lastNode = last.getPrev();
+        lastNode.setNext(node);
+        node.setPrev(lastNode);
+        node.setNext(last);
+        last.setPrev(node);
+    }
+
+    private List<Task> getTasks() {
+        List<Task> tasksList = new ArrayList<>();
+        Node node = first.getNext();
+        while (node != null && !node.equals(last)) {
+            tasksList.add(node.getTask());
+            node = node.getNext();
+        }
+        return tasksList;
     }
 }
