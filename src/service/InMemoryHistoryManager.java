@@ -28,10 +28,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        if (taskHistory == null) {
-            System.out.println("Ошибка, история отсутствует");
-            return null;
-        }
         return getTasks();
     }
 
@@ -48,9 +44,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         node.getNext().setPrev(node.getPrev());
     }
 
-    /* Хотел создать отдельный класс для CustomLinkedList, но решил реализовать методы linkLast() и getTasks() в классе
-     * InMemoryHistoryManager, т.к. по заданию было указано "Отдельный класс для списка создавать не нужно — реализуйте
-     * его прямо в классе InMemoryHistoryManager." Возможно не так понял) */
     private void linkLast(Task task) {
         Node node = new Node();
         if (first.getNext() == null) {
@@ -75,6 +68,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> getTasks() {
         List<Task> tasksList = new ArrayList<>();
         Node node = first.getNext();
+        /* на сколько я знаю в LinkedList также реализованы два элемента first и last, которые не хранят значения,
+         * а хранят только ссылку на фактически первый/последний элемент списка, решил сделать также :) */
         while (node != null && !node.equals(last)) {
             tasksList.add(node.getTask());
             node = node.getNext();

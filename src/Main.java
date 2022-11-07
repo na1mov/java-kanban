@@ -25,7 +25,7 @@ public class Main {
         manager.add(secondSubtask);
         thirdSubtask.setEpicId(firstEpic.getId());
         manager.add(thirdSubtask);
-        
+
         System.out.println(manager.getAllRegularTasks());
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllSubTasks());
