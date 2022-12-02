@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int identityNumber = 1;
-    private final HashMap<Integer, Task> regularTasks;
-    private final HashMap<Integer, Epic> epicTasks;
-    private final HashMap<Integer, Subtask> subTasks;
+    protected static int identityNumber = 1;
+    protected final HashMap<Integer, Task> regularTasks;
+    protected final HashMap<Integer, Epic> epicTasks;
+    protected final HashMap<Integer, Subtask> subTasks;
 
-    private final HistoryManager historyManager;
+    protected final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         regularTasks = new HashMap<>();
@@ -174,7 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
         return subTasks.getOrDefault(id, null);
     }
 
-    private void setId(Task task) {
+    protected void setId(Task task) {
         task.setIdentityNumber(identityNumber);
         identityNumber++;
     }
