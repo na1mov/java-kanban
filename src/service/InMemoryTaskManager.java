@@ -7,7 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected static int identityNumber = 1;
+    protected int identityNumber = 1;
+    /* Я собственно с этой целью и делал статик, чтоб id относился к классу и у всех объектов он копился, т.к. думал,
+    что в будущем будет какой-то подвох с повторяющимися id у разных объектов, но раз подховов не планируется,
+    то статик убрал :)
+    */
     protected final HashMap<Integer, Task> regularTasks;
     protected final HashMap<Integer, Epic> epicTasks;
     protected final HashMap<Integer, Subtask> subTasks;

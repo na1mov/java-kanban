@@ -28,6 +28,11 @@ public class Epic extends Task {
                 '}';
     }
 
+    @Override
+    protected void setType() {
+        this.type = TaskType.EPIC;
+    }
+
     public void setSubtask(Subtask subtask) {
         if (subtask == null || !subtask.getClass().getSimpleName().equals("Subtask")) {
             System.out.println("Ошибка");

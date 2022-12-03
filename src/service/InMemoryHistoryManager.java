@@ -68,8 +68,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> getTasks() {
         List<Task> tasksList = new ArrayList<>();
         Node node = first.getNext();
-        /* на сколько я знаю в LinkedList также реализованы два элемента first и last, которые не хранят значения,
-         * а хранят только ссылку на фактически первый/последний элемент списка, решил сделать также :) */
         while (node != null && !node.equals(last)) {
             tasksList.add(node.getTask());
             node = node.getNext();

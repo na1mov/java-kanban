@@ -24,4 +24,9 @@ public class Subtask extends Task {
                 ", status=" + status +
                 '}';
     }
+
+    @Override
+    protected void setType() {
+        this.type = TaskType.SUBTASK;
+    }
 }

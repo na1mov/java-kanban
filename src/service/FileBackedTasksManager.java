@@ -1,5 +1,6 @@
 package service;
 
+import exceptions.ManagerSaveException;
 import model.*;
 
 import java.io.*;
@@ -83,6 +84,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             System.out.println(task);
         }
         System.out.println("=".repeat(75));
+        System.out.println("Восстановленный ID счётчик:");
+        System.out.println(secondManager.identityNumber);
         System.out.println("=".repeat(75));
     }
 
@@ -155,48 +158,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String[] lineData = value.split(",");
-        TaskStatus status = TaskStatus.NEW;
-        switch (lineData[3]) {
-            case "NEW":
-                break;
-            case "IN_PROGRESS":
-                status = TaskStatus.IN_PROGRESS;
-                break;
-            case "DONE":
-                status = TaskStatus.DONE;
-                break;
-        }
-        if (lineData[1].equals("TASK")) {
-            Task task = new Task(lineData[2], lineData[4], status);
-            task.setIdentityNumber(Integer.parseInt(lineData[0]));
-            regularTasks.put(task.getId(), task);
-            return task;
-        } else if (lineData[1].equals("EPIC")) {
-            Epic epic = new Epic(lineData[2], lineData[4], status);
-            epic.setIdentityNumber(Integer.parseInt(lineData[0]));
-            epicTasks.put(epic.getId(), epic);
-            return epic;
-        } else if (lineData[1].equals("SUBTASK")) {
-            Subtask subtask = new Subtask(lineData[2], lineData[4], status);
-            subtask.setIdentityNumber(Integer.parseInt(lineData[0]));
-            subtask.setEpicId(Integer.parseInt(lineData[5]));
-            subTasks.put(subtask.getId(), subtask);
-            epicTasks.get(subtask.getEpicId()).setSubtask(subtask);
-            checkEpicStatus(epicTasks.get(subtask.getEpicId()));
-            return subtask;
+        switch (lineData[1]) {
+            case "TASK":
+                Task task = new Task(lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
+                // совсем забыл про valueOf, спасибо за подсказку)
+                task.setIdentityNumber(Integer.parseInt(lineData[0]));
+                return task;
+            case "EPIC":
+                Epic epic = new Epic(lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
+                epic.setIdentityNumber(Integer.parseInt(lineData[0]));
+                return epic;
+            case "SUBTASK":
+                Subtask subtask = new Subtask(lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
+                subtask.setIdentityNumber(Integer.parseInt(lineData[0]));
+                subtask.setEpicId(Integer.parseInt(lineData[5]));
+                return subtask;
         }
         return null;
     }
 
     private static String historyToString(HistoryManager historyManager) {
-        StringBuilder sb = new StringBuilder();
+        ArrayList<String> listHistoryID = new ArrayList<>();
         for (int i = 0; i < historyManager.getHistory().size(); i++) {
-            sb.append(historyManager.getHistory().get(i).getId());
-            if (i < historyManager.getHistory().size() - 1) {
-                sb.append(',');
-            }
+            listHistoryID.add("" + historyManager.getHistory().get(i).getId());
         }
-        return sb.toString();
+        return String.join(",", listHistoryID);
     }
 
     private static List<Integer> historyFromString(String value) {
@@ -212,43 +198,57 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return result;
     }
 
-    private static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fbt = new FileBackedTasksManager(file);
         List<String> fileContent = new ArrayList<>();
+        int biggestSavedID = 0;
         try (Reader fileReader = new FileReader(file);
              BufferedReader br = new BufferedReader(fileReader)) {
             while (br.ready()) {
                 String line = br.readLine();
                 fileContent.add(line);
             }
-            for (int i = 0; i < fileContent.size() - 2; i++) {
-                fbt.fromString(fileContent.get(i));
-            }
-            List<Integer> historyList = historyFromString(fileContent.get(fileContent.size() - 1));
-            for (Integer id : historyList) {
-                if (fbt.regularTasks.containsKey(id)) {
-                    fbt.historyManager.add(fbt.regularTasks.get(id));
-                } else if (fbt.epicTasks.containsKey(id)) {
-                    fbt.historyManager.add(fbt.epicTasks.get(id));
-                } else if (fbt.subTasks.containsKey(id)) {
-                    fbt.historyManager.add(fbt.subTasks.get(id));
+            if (fileContent.size() < 3) {
+                System.out.println("Файл сохранения пуст. Восстановление не возможно.");
+            } else {
+                for (int i = 0; i < fileContent.size() - 2; i++) {
+                    Task task = fbt.fromString(fileContent.get(i));
+                    if (task != null) {
+                        if (task.getId() > biggestSavedID) {
+                            biggestSavedID = task.getId();
+                        }
+                        switch (task.getType()) {
+                            case TASK:
+                                fbt.regularTasks.put(task.getId(), task);
+                                break;
+                            case EPIC:
+                                fbt.epicTasks.put(task.getId(), (Epic) task);
+                                break;
+                            case SUBTASK:
+                                Subtask subtask = (Subtask) task;
+                                fbt.subTasks.put(task.getId(), (Subtask) task);
+                                fbt.epicTasks.get(subtask.getEpicId()).setSubtask(subtask);
+                                fbt.checkEpicStatus(fbt.epicTasks.get(subtask.getEpicId()));
+                                break;
+                        }
+                    }
+                }
+                List<Integer> historyList = historyFromString(fileContent.get(fileContent.size() - 1));
+                for (Integer id : historyList) {
+                    if (fbt.regularTasks.containsKey(id)) {
+                        fbt.historyManager.add(fbt.regularTasks.get(id));
+                    } else if (fbt.epicTasks.containsKey(id)) {
+                        fbt.historyManager.add(fbt.epicTasks.get(id));
+                    } else if (fbt.subTasks.containsKey(id)) {
+                        fbt.historyManager.add(fbt.subTasks.get(id));
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        fbt.identityNumber = biggestSavedID;
         return fbt;
-    }
-
-    @Override
-    public void setIdentityNumber(int identityNumber) {
-        super.setIdentityNumber(identityNumber);
-        save();
-    }
-
-    @Override
-    public HistoryManager getHistoryManager() {
-        return super.getHistoryManager();
     }
 
     @Override
