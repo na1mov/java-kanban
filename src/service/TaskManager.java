@@ -22,7 +22,7 @@ public interface TaskManager {
 
     void removeAllEpics();
 
-    void removeAllSubTasks();
+    void removeAllSubtasks();
 
     Task getTask(int id);
 
@@ -30,11 +30,11 @@ public interface TaskManager {
 
     Subtask getSubtask(int id);
 
-    void updateTaskById(Task task);
+    void updateTask(Task task);
 
-    void updateEpicById(Epic epic);
+    void updateEpic(Epic epic);
 
-    void updateSubtaskById(Subtask subtask);
+    void updateSubtask(Subtask subtask);
 
     void removeTaskById(int id);
 
@@ -43,4 +43,8 @@ public interface TaskManager {
     void checkEpicStatus(Epic epic);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
+
+    boolean isTimeValidationOk(Task task);
 }

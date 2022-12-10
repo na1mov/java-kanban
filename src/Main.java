@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
         TaskManager manager = Managers.getDefault();
+        manager.removeAllRegularTasks();
 
         Task firstTask = new Task("Задача 1", "Some moves", TaskStatus.NEW);
         Task secondTask = new Task("Задача 2", "Some extra moves", TaskStatus.NEW);
@@ -84,7 +85,7 @@ public class Main {
 
         manager.removeAllRegularTasks();
         manager.removeAllEpics();
-        manager.removeAllSubTasks();
+        manager.removeAllSubtasks();
 
         System.out.println("Печать списков задач и истории вызовов после удаления всех задач:");
         System.out.println(manager.getAllRegularTasks());
