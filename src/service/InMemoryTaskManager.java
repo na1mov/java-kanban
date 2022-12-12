@@ -21,6 +21,11 @@ public class InMemoryTaskManager implements TaskManager {
             return (int) Duration.between(task2.getStartTime(), task1.getStartTime()).toMinutes();
         }
     });
+    /*
+    попытался заменить лямбду на Comparator.comparing(Task::getStartTime), выдаёт NullPointerException, видимо она
+    плохо работает, когда поле startTime == null, решил оставить пока свою реализацию, но почитаю дополнительно про
+    лямбда выражения со ссылкой, может смогу понять, как это улучшить :)
+    */
     protected final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
@@ -241,12 +246,15 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Такой задачи ещё не было поставлено");
             return;
         }
+        if (subtask.getEpicId() > this.identityNumber || subtask.getEpicId() < 1
+                || !epicTasks.containsKey(subtask.getEpicId())) {
+            System.out.println("Эпика с таким ID номером не существует");
+            return;
+        }
         if (subTasks.containsKey(subtask.getId())) {
-            int tempEpicId = subTasks.get(subtask.getId()).getEpicId();
             removeTaskById(subtask.getId());
-            subtask.setEpicId(tempEpicId);
-            epicTasks.get(tempEpicId).setSubtask(subtask);
-            checkEpicStatus(epicTasks.get(tempEpicId));
+            epicTasks.get(subtask.getEpicId()).setSubtask(subtask);
+            checkEpicStatus(epicTasks.get(subtask.getEpicId()));
             subTasks.put(subtask.getId(), subtask);
         }
     }

@@ -12,19 +12,21 @@ public class Main {
         Task secondTask = new Task("Задача 2", "Some extra moves", TaskStatus.NEW);
         Epic firstEpic = new Epic("Эпик 1", "Эпик с 3 подзадачами", TaskStatus.NEW);
         Epic secondEpic = new Epic("Эпик 2", "Эпик без подзадач", TaskStatus.NEW);
-        Subtask firstSubtask = new Subtask("Подзадача 1", "выполнить половину 1 эпика 1", TaskStatus.NEW);
-        Subtask secondSubtask = new Subtask("Подзадача 2", "выполнить половину 2 эпика 1", TaskStatus.NEW);
-        Subtask thirdSubtask = new Subtask("Подзадача 3", "выполнить половину 3 эпика 1", TaskStatus.NEW);
 
-        manager.add(firstTask);
-        manager.add(secondTask);
         manager.add(firstEpic);
         manager.add(secondEpic);
-        firstSubtask.setEpicId(firstEpic.getId());
-        secondSubtask.setEpicId(firstEpic.getId());
+        manager.add(firstTask);
+        manager.add(secondTask);
+
+        Subtask firstSubtask = new Subtask("Подзадача 1", "выполнить половину 1 эпика 1",
+                TaskStatus.NEW, firstEpic.getId());
+        Subtask secondSubtask = new Subtask("Подзадача 2", "выполнить половину 2 эпика 1",
+                TaskStatus.NEW, firstEpic.getId());
+        Subtask thirdSubtask = new Subtask("Подзадача 3", "выполнить половину 3 эпика 1",
+                TaskStatus.NEW, firstEpic.getId());
+
         manager.add(firstSubtask);
         manager.add(secondSubtask);
-        thirdSubtask.setEpicId(firstEpic.getId());
         manager.add(thirdSubtask);
 
         System.out.println(manager.getAllRegularTasks());
@@ -65,10 +67,9 @@ public class Main {
         }
         System.out.println("=".repeat(75));
 
-        System.out.println("Удаление задач: Эпик2, Сабтаск 2, Эпик 1, Задача 2");
+        System.out.println("Удаление задач: Эпик2, Сабтаск 2, Задача 2");
         manager.removeTaskById(secondEpic.getId());
         manager.removeTaskById(secondSubtask.getId());
-        manager.removeTaskById(firstEpic.getId());
         manager.removeTaskById(secondTask.getId());
 
         System.out.println("Имеющиеся задачи:");

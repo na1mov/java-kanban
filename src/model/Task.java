@@ -39,7 +39,7 @@ public class Task {
     }
 
     protected void setEndTime() {
-        if(duration != null && startTime != null) {
+        if (duration != null && startTime != null) {
             endTime = startTime.plus(duration);
         } else {
             System.out.println("Ошибка. Не задан один или оба параметра приоритета задачи.");
@@ -110,20 +110,15 @@ public class Task {
     @Override
     public String toString() {
         if (duration != null && startTime != null) {
-            return "Task{" +
-                    "name='" + name + '\'' +
-                    ", details='" + details + '\'' +
-                    ", status=" + status + '\'' +
-                    ", start time=" + startTime.format(formatter) + '\'' +
-                    ", duration=" + duration.toMinutes() + "min" + '\'' +
-                    ", end time=" + this.getEndTime().format(formatter) +
-                    '}';
-        } else {
-            return "Task{" +
-                    "name='" + name + '\'' +
-                    ", details='" + details + '\'' +
-                    ", status=" + status +
-                    '}';
+            this.setEndTime();
         }
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", details='" + details + '\'' +
+                ", status=" + status +
+                (startTime == null ? "" : ", start time=" + startTime.format(formatter)) +
+                (duration == null ? "" : ", duration=" + duration.toMinutes() + "min") +
+                (endTime == null ? "" : ", end time=" + this.getEndTime().format(formatter)) +
+                '}';
     }
 }

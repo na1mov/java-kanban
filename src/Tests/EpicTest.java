@@ -21,15 +21,15 @@ class EpicTest {
     public void beforeEach() {
         manager = Managers.getDefault();
         testEpic = new Epic("Test Epic", "Test Epic Description", TaskStatus.NEW);
-        firstSubtask = new Subtask("Test Subtask 1", "Test Subtask 1 Description", TaskStatus.NEW);
-        secondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 Description", TaskStatus.NEW);
-        thirdSubtask = new Subtask("Test Subtask 3", "Test Subtask 3 Description", TaskStatus.NEW);
         manager.add(testEpic);
-        firstSubtask.setEpicId(testEpic.getId());
-        secondSubtask.setEpicId(testEpic.getId());
+        firstSubtask = new Subtask("Test Subtask 1", "Test Subtask 1 Description",
+                TaskStatus.NEW, testEpic.getId());
+        secondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 Description",
+                TaskStatus.NEW, testEpic.getId());
+        thirdSubtask = new Subtask("Test Subtask 3", "Test Subtask 3 Description",
+                TaskStatus.NEW, testEpic.getId());
         manager.add(firstSubtask);
         manager.add(secondSubtask);
-        thirdSubtask.setEpicId(testEpic.getId());
         manager.add(thirdSubtask);
     }
 
@@ -46,9 +46,12 @@ class EpicTest {
 
     @Test
     public void shouldBeDoneWhenAllSubtasksIsDone() {
-        Subtask newFirstSubtask = new Subtask("Test Subtask 1", "Test Subtask 1 isDone", TaskStatus.DONE);
-        Subtask newSecondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 isDone", TaskStatus.DONE);
-        Subtask newThirdSubtask = new Subtask("Test Subtask 3", "Test Subtask 3 isDone", TaskStatus.DONE);
+        Subtask newFirstSubtask = new Subtask("Test Subtask 1", "Test Subtask 1 isDone",
+                TaskStatus.DONE, testEpic.getId());
+        Subtask newSecondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 isDone",
+                TaskStatus.DONE, testEpic.getId());
+        Subtask newThirdSubtask = new Subtask("Test Subtask 3", "Test Subtask 3 isDone",
+                TaskStatus.DONE, testEpic.getId());
         newFirstSubtask.setId(firstSubtask.getId());
         newSecondSubtask.setId(secondSubtask.getId());
         newThirdSubtask.setId(thirdSubtask.getId());
@@ -60,7 +63,8 @@ class EpicTest {
 
     @Test
     public void shouldBeInProgressWhenSubtasksIsMixedNewOrDone() {
-        Subtask newSecondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 isDone", TaskStatus.DONE);
+        Subtask newSecondSubtask = new Subtask("Test Subtask 2", "Test Subtask 2 isDone",
+                TaskStatus.DONE, testEpic.getId());
         newSecondSubtask.setId(secondSubtask.getId());
         manager.updateSubtask(newSecondSubtask);
         assertEquals(TaskStatus.IN_PROGRESS, testEpic.getStatus());
@@ -69,11 +73,11 @@ class EpicTest {
     @Test
     public void shouldBeInProgressWhenAllSubtasksIsInProgress() {
         Subtask newFirstSubtask = new Subtask("Test Subtask 1", "Test 1 inProgress",
-                TaskStatus.IN_PROGRESS);
+                TaskStatus.IN_PROGRESS, testEpic.getId());
         Subtask newSecondSubtask = new Subtask("Test Subtask 2", "Test 2 isProgress",
-                TaskStatus.IN_PROGRESS);
+                TaskStatus.IN_PROGRESS, testEpic.getId());
         Subtask newThirdSubtask = new Subtask("Test Subtask 3", "Test 3 isProgress",
-                TaskStatus.IN_PROGRESS);
+                TaskStatus.IN_PROGRESS, testEpic.getId());
         newFirstSubtask.setId(firstSubtask.getId());
         newSecondSubtask.setId(secondSubtask.getId());
         newThirdSubtask.setId(thirdSubtask.getId());

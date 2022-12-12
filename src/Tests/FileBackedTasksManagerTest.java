@@ -22,7 +22,8 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test description", TaskStatus.IN_PROGRESS,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         testSubtask1.setEpicId(testEpic.getId());
         manager.add(testSubtask1);
         Task firstTask = new Task("Test task 1", "Test task 1 description", TaskStatus.NEW,

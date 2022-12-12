@@ -67,12 +67,11 @@ class InMemoryHistoryManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         testEpic.setId(2);
         historyManager.add(testEpic);
-        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask.setId(3);
-        Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
+        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description",
+                TaskStatus.NEW, 3, Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
+        Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW, 4,
                 Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask2.setId(4);
         testSubtask.setEpicId(testEpic.getId());
         testSubtask2.setEpicId(testEpic.getId());
         historyManager.add(testSubtask);
@@ -106,14 +105,14 @@ class InMemoryHistoryManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         testEpic.setId(2);
         historyManager.add(testEpic);
-        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask.setId(3);
+        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description",
+                TaskStatus.NEW, testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
+        testSubtask.setId(3);
         testSubtask2.setId(4);
-        testSubtask.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
         historyManager.add(testSubtask);
         historyManager.add(testSubtask2);
         List<Task> testArray = new ArrayList<>();

@@ -101,12 +101,12 @@ class InMemoryTaskManagerTest {
     public void shouldPrintMessageIfSubtaskValidationFailed() {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
-        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        Subtask testSubtask2WithSameTime = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask.setEpicId(testEpic.getId());
-        testSubtask2WithSameTime.setEpicId(testEpic.getId());
+        Subtask testSubtask = new Subtask("Test subtask 1", "Test subtask description",
+                TaskStatus.NEW, testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
+        Subtask testSubtask2WithSameTime = new Subtask("Test subtask 2", "Description",
+                TaskStatus.NEW, testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask);
         manager.add(testSubtask2WithSameTime);
         Assertions.assertEquals("Ошибка. На это время запланирована другая задача.", output.toString().trim());
@@ -115,8 +115,8 @@ class InMemoryTaskManagerTest {
     @Test
     public void shouldPrintMessageIfEpicIdIsWrong() {
         Subtask testSubtask = new Subtask("Test subtask", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask.setEpicId(42);
+                42, Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask);
         Assertions.assertEquals("Ошибка ввода ID эпика", output.toString().trim());
     }
@@ -126,8 +126,8 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask = new Subtask("Test subtask", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask);
         Assertions.assertTrue(testEpic.getId() != 0);
         Assertions.assertTrue(manager.getAllEpics().contains(testEpic));
@@ -188,11 +188,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         ArrayList<Task> testArray = new ArrayList<>();
@@ -231,11 +231,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.removeAllSubtasks();
@@ -303,8 +303,8 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask1.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask1);
         Assertions.assertEquals(testSubtask1, manager.getSubtask(testSubtask1.getId()));
         Assertions.assertEquals(testSubtask1, manager.getHistory().get(manager.getHistory().size() - 1));
@@ -321,8 +321,8 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask1.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask1);
         manager.removeTaskById(testSubtask1.getId());
         Assertions.assertNull(manager.getSubtask(testSubtask1.getId()));
@@ -335,8 +335,8 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask1.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask1);
         Task testTask = new Task("Test task 1", "Test task 1 description", TaskStatus.NEW,
                 Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
@@ -401,11 +401,12 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask1.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask1);
         Subtask updTestSubtask1 = new Subtask("Test subtask upd", "Test subtask 1 updated", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         updTestSubtask1.setId(testSubtask1.getId());
         manager.updateSubtask(updTestSubtask1);
         Assertions.assertEquals(updTestSubtask1, manager.getSubtask(updTestSubtask1.getId()));
@@ -449,11 +450,11 @@ class InMemoryTaskManagerTest {
         manager.add(firstEpic);
         manager.add(secondEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                firstEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(firstEpic.getId());
-        testSubtask2.setEpicId(firstEpic.getId());
+                firstEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.removeTaskById(firstEpic.getId());
@@ -469,11 +470,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.removeTaskById(testSubtask1.getId());
@@ -504,11 +505,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         List<Subtask> testArray = new ArrayList<>();
@@ -531,11 +532,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.DONE);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.checkEpicStatus(testEpic);
@@ -547,11 +548,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.DONE,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.DONE,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.checkEpicStatus(testEpic);
@@ -563,11 +564,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.DONE,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.checkEpicStatus(testEpic);
@@ -579,11 +580,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test description", TaskStatus.IN_PROGRESS,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.IN_PROGRESS,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         manager.checkEpicStatus(testEpic);
@@ -601,8 +602,8 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test description", TaskStatus.IN_PROGRESS,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
-        testSubtask1.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         manager.add(testSubtask1);
         Task firstTask = new Task("Test task 1", "Test task 1 description", TaskStatus.NEW,
                 Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
@@ -637,11 +638,11 @@ class InMemoryTaskManagerTest {
         Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
         manager.add(testEpic);
         Subtask testSubtask1 = new Subtask("Test subtask 1", "Test subtask description", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 11, 30));
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 11, 30));
         Subtask testSubtask2 = new Subtask("Test subtask 2", "Description", TaskStatus.DONE,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 12, 30));
-        testSubtask1.setEpicId(testEpic.getId());
-        testSubtask2.setEpicId(testEpic.getId());
+                testEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 12, 30));
         manager.add(testSubtask1);
         manager.add(testSubtask2);
         Task firstTask = new Task("Test task 1", "Test task 1 description", TaskStatus.NEW,

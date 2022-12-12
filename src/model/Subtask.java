@@ -6,12 +6,15 @@ import java.time.LocalDateTime;
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String name, String details, TaskStatus status) {
+    public Subtask(String name, String details, TaskStatus status, int epicId) {
         super(name, details, status);
+        this.epicId = epicId;
     }
 
-    public Subtask(String name, String details, TaskStatus status, Duration duration, LocalDateTime startTime) {
+    public Subtask(String name, String details, TaskStatus status, int epicId,
+                   Duration duration, LocalDateTime startTime) {
         super(name, details, status, duration, startTime);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
@@ -25,23 +28,17 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         if (duration != null && startTime != null) {
-            return "Subtask{" +
-                    "name='" + name + '\'' +
-                    ", details='" + details + '\'' +
-                    ", epicId=" + epicId + '\'' +
-                    ", status=" + status + '\'' +
-                    ", start time=" + startTime.format(formatter) + '\'' +
-                    ", duration=" + duration.toMinutes() + "min" + '\'' +
-                    ", end time=" + this.getEndTime().format(formatter) +
-                    '}';
-        } else {
-            return "Subtask{" +
-                    "name='" + name + '\'' +
-                    ", details='" + details + '\'' +
-                    ", epicId=" + epicId + '\'' +
-                    ", status=" + status +
-                    '}';
+            this.setEndTime();
         }
+        return "Subtask{" +
+                "name='" + name + '\'' +
+                ", details='" + details + '\'' +
+                ", epicId=" + epicId +
+                ", status=" + status +
+                (startTime == null ? "" : ", start time=" + startTime.format(formatter)) +
+                (duration == null ? "" : ", duration=" + duration.toMinutes() + "min") +
+                (endTime == null ? "" : ", end time=" + this.getEndTime().format(formatter)) +
+                '}';
     }
 
     @Override

@@ -26,22 +26,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 LocalDateTime.of(2022, 12, 9, 12, 30));
         Epic firstEpic = new Epic("Эпик 1", "Эпик с 3 подзадачами", TaskStatus.NEW);
         Epic secondEpic = new Epic("Эпик 2", "Эпик без подзадач", TaskStatus.NEW);
-        Subtask firstSubtask = new Subtask("Подзадача 1", "выполнить половину 1 эпика 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 13, 30));
-        Subtask secondSubtask = new Subtask("Подзадача 2", "выполнить половину 2 эпика 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 14, 30));
-        Subtask thirdSubtask = new Subtask("Подзадача 3", "выполнить половину 3 эпика 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.of(2022, 12, 9, 15, 30));
 
         manager.add(firstTask);
         manager.add(secondTask);
         manager.add(firstEpic);
         manager.add(secondEpic);
-        firstSubtask.setEpicId(firstEpic.getId());
-        secondSubtask.setEpicId(firstEpic.getId());
+
+        Subtask firstSubtask = new Subtask("Подзадача 1", "выполнить половину 1 эпика 1",
+                TaskStatus.NEW, firstEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 13, 30));
+        Subtask secondSubtask = new Subtask("Подзадача 2", "выполнить половину 2 эпика 1",
+                TaskStatus.NEW, firstEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 14, 30));
+        Subtask thirdSubtask = new Subtask("Подзадача 3", "выполнить половину 3 эпика 1",
+                TaskStatus.NEW, firstEpic.getId(), Duration.ofMinutes(10),
+                LocalDateTime.of(2022, 12, 9, 15, 30));
+
         manager.add(firstSubtask);
         manager.add(secondSubtask);
-        thirdSubtask.setEpicId(firstEpic.getId());
         manager.add(thirdSubtask);
 
         Task thirdTask = new Task("Task 3", "Task 3 with null startTime", TaskStatus.NEW);
@@ -208,14 +210,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
                 return epic;
             case "SUBTASK":
-                Subtask subtask = new Subtask(lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
-                subtask.setId(Integer.parseInt(lineData[0]));
+                Subtask subtask;
                 if (lineData.length == 8) {
-                    subtask.setEpicId(Integer.parseInt(lineData[7]));
+                    subtask = new Subtask(lineData[2], lineData[4],
+                            TaskStatus.valueOf(lineData[3]), Integer.parseInt(lineData[7]));
+                    subtask.setId(Integer.parseInt(lineData[0]));
                     subtask.setStartTime(LocalDateTime.parse(lineData[5]));
                     subtask.setDuration(Duration.ofMinutes(Integer.parseInt(lineData[6])));
                 } else {
-                    subtask.setEpicId(Integer.parseInt(lineData[5]));
+                    subtask = new Subtask(lineData[2], lineData[4],
+                            TaskStatus.valueOf(lineData[3]), Integer.parseInt(lineData[5]));
+                    subtask.setId(Integer.parseInt(lineData[0]));
                 }
                 return subtask;
         }
