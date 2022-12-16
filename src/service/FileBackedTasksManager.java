@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final File filePath;
+    protected final String filePath;
 
-    public FileBackedTasksManager(File filePath) {
+    public FileBackedTasksManager(String filePath) {
         this.filePath = filePath;
     }
 
     public static void main(String[] args) {
         FileBackedTasksManager manager = new FileBackedTasksManager(
-                new File("c:\\Users\\aleks\\dev\\java-kanban\\resources\\save"));
+                "c:\\Users\\aleks\\dev\\java-kanban\\resources\\save");
 
         Task firstTask = new Task("Задача 1", "Some moves", TaskStatus.NEW, Duration.ofMinutes(10),
                 LocalDateTime.of(2022, 12, 9, 11, 30));
@@ -88,7 +88,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("=".repeat(75));
 
         FileBackedTasksManager secondManager = FileBackedTasksManager.loadFromFile(
-                new File("c:\\Users\\aleks\\dev\\java-kanban\\resources\\save"));
+                "c:\\Users\\aleks\\dev\\java-kanban\\resources\\save");
 
         System.out.println("Печать списков задач и истории вызовов при бекапе из файла:");
         System.out.println(secondManager.getAllRegularTasks());
@@ -105,16 +105,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("=".repeat(75));
     }
 
-    private void save() throws ManagerSaveException {
+    protected void save() throws ManagerSaveException {
         try (Writer fileWriter = new FileWriter(filePath)) {
             fileWriter.write("id,type,name,status,description,startTime,duration,epic\n");
             for (int i = 1; i < identityNumber; i++) {
                 if (regularTasks.containsKey(i)) {
-                    fileWriter.write(toCsvString(regularTasks.get(i)));
+                    fileWriter.write(toString(regularTasks.get(i)));
                 } else if (epicTasks.containsKey(i)) {
-                    fileWriter.write(toCsvString(epicTasks.get(i)));
+                    fileWriter.write(toString(epicTasks.get(i)));
                 } else if (subTasks.containsKey(i)) {
-                    fileWriter.write(toCsvString(subTasks.get(i)));
+                    fileWriter.write(toString(subTasks.get(i)));
                 }
             }
             fileWriter.write(" \n");
@@ -126,7 +126,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private String toCsvString(Task task) {
+    protected String toString(Task task) {
         StringBuilder sb = new StringBuilder();
         if (task instanceof Epic) {
             Epic epic = (Epic) task;
@@ -190,7 +190,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return sb.toString();
     }
 
-    private Task fromString(String value) {
+    protected Task fromString(String value) {
         String[] lineData = value.split(",");
         switch (lineData[1]) {
             case "TASK":
@@ -227,7 +227,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return null;
     }
 
-    private static String historyToString(HistoryManager historyManager) {
+    protected String historyToString(HistoryManager historyManager) {
         ArrayList<String> listHistoryID = new ArrayList<>();
         for (int i = 0; i < historyManager.getHistory().size(); i++) {
             listHistoryID.add("" + historyManager.getHistory().get(i).getId());
@@ -235,7 +235,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return String.join(",", listHistoryID);
     }
 
-    private static List<Integer> historyFromString(String value) {
+    protected List<Integer> historyFromString(String value) {
         List<Integer> result = new ArrayList<>();
         if (value.isEmpty()) {
             return result;
@@ -253,7 +253,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return result;
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(String file) {
         FileBackedTasksManager fbt = new FileBackedTasksManager(file);
         List<String> fileContent = new ArrayList<>();
         int biggestSavedID = 0;
@@ -288,7 +288,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         }
                     }
                 }
-                List<Integer> historyList = historyFromString(fileContent.get(fileContent.size() - 1));
+                List<Integer> historyList = fbt.historyFromString(fileContent.get(fileContent.size() - 1));
                 for (Integer id : historyList) {
                     if (fbt.regularTasks.containsKey(id)) {
                         fbt.historyManager.add(fbt.regularTasks.get(id));

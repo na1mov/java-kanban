@@ -9,6 +9,7 @@ import service.Managers;
 import service.TaskManager;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -22,15 +23,10 @@ class InMemoryTaskManagerTest {
     protected static TaskManager manager;
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws IOException {
         output = new ByteArrayOutputStream();
         manager = Managers.getDefault();
         System.setOut(new PrintStream(output));
-
-        /*
-        думал добавить в этот метод инициализацию и добавление задач, но они нужны не для всех тестов и их набор
-        также не нормирован, поэтому решил каждый тест писать отдельно
-        */
     }
 
     @AfterEach

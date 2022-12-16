@@ -9,7 +9,7 @@ import service.FileBackedTasksManager;
 import service.TaskManager;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -38,12 +38,13 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
     @Test
     public void shouldSaveAndBackupAllInfo() {
         backedManager = FileBackedTasksManager.loadFromFile(
-                new File("c:\\Users\\aleks\\dev\\java-kanban\\resources\\saveForTests"));
+                "c:\\Users\\aleks\\dev\\java-kanban\\resources\\saveForTests");
         if (manager.getAllRegularTasks() == null || backedManager.getAllRegularTasks() == null) {
             Assertions.assertNull(manager.getAllRegularTasks());
             Assertions.assertNull(backedManager.getAllRegularTasks());
         } else {
-            Assertions.assertArrayEquals(manager.getAllRegularTasks().toArray(), backedManager.getAllRegularTasks().toArray());
+            Assertions.assertArrayEquals(manager.getAllRegularTasks().toArray(),
+                    backedManager.getAllRegularTasks().toArray());
         }
         if (manager.getAllEpics() == null || backedManager.getAllEpics() == null) {
             Assertions.assertNull(manager.getAllEpics());
@@ -62,10 +63,10 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
 
     @Override
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws IOException {
         output = new ByteArrayOutputStream();
         manager = new FileBackedTasksManager(
-                new File("c:\\Users\\aleks\\dev\\java-kanban\\resources\\saveForTests"));
+                "c:\\Users\\aleks\\dev\\java-kanban\\resources\\saveForTests");
         System.setOut(new PrintStream(output));
     }
 

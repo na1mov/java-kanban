@@ -11,7 +11,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epicTasks;
     protected final HashMap<Integer, Subtask> subTasks;
     protected Set<Task> prioritizedTasks = new TreeSet<>((task1, task2) -> {
-        if(task1.getStartTime() == null && task2.getStartTime() == null) {
+        if (task1.getStartTime() == null && task2.getStartTime() == null) {
             return 0;
         } else if (task1.getStartTime() == null) {
             return 1;
@@ -21,11 +21,6 @@ public class InMemoryTaskManager implements TaskManager {
             return (int) Duration.between(task2.getStartTime(), task1.getStartTime()).toMinutes();
         }
     });
-    /*
-    попытался заменить лямбду на Comparator.comparing(Task::getStartTime), выдаёт NullPointerException, видимо она
-    плохо работает, когда поле startTime == null, решил оставить пока свою реализацию, но почитаю дополнительно про
-    лямбда выражения со ссылкой, может смогу понять, как это улучшить :)
-    */
     protected final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
@@ -344,14 +339,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean isTimeValidationOk(Task task) {
-        if(task.getStartTime() == null) {
+        if (task.getStartTime() == null) {
             return true;
         }
-        for(Task tempTask : getPrioritizedTasks()) {
-            if(task.getId() != 0 && task.getId() == tempTask.getId()) {
+        for (Task tempTask : getPrioritizedTasks()) {
+            if (task.getId() != 0 && task.getId() == tempTask.getId()) {
                 continue;
             }
-            if(!(task.getStartTime().isBefore(tempTask.getStartTime())
+            if (!(task.getStartTime().isBefore(tempTask.getStartTime())
                     && task.getEndTime().isBefore(tempTask.getStartTime()))
                     && !(task.getStartTime().isAfter(tempTask.getEndTime())
                     && task.getEndTime().isAfter(tempTask.getEndTime()))) {
