@@ -31,7 +31,7 @@ class InMemoryTaskManagerTest {
 
     @AfterEach
     public void afterEach() {
-        System.setOut(null);
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
     }
 
     // тесты для метода add(Task task)

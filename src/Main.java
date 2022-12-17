@@ -12,7 +12,7 @@ public class Main {
         KVServer kvServer = new KVServer();
         kvServer.start();
 
-        TaskManager manager = new HttpTasksManager("http://localhost:8080");
+        TaskManager manager = Managers.getDefault();
 
         Task firstTask = new Task("Задача 1", "Some moves", TaskStatus.NEW, Duration.ofMinutes(10),
                 LocalDateTime.of(2022, 12, 9, 11, 30));

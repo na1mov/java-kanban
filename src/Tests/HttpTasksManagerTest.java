@@ -7,6 +7,7 @@ import model.TaskStatus;
 import org.junit.jupiter.api.*;
 import service.HttpTasksManager;
 import service.KVServer;
+import service.Managers;
 import service.TaskManager;
 
 import java.io.ByteArrayOutputStream;
@@ -20,31 +21,21 @@ class HttpTasksManagerTest extends FileBackedTasksManagerTest {
     protected static KVServer kvServer;
 
     /*
-    В задании сказано: "Чтобы каждый раз не добавлять запуск KVServer и HttpTaskServer серверов, можно реализовать в
-    классах с тестами отдельный метод. Пометьте его аннотацией @BeforeAll — если предполагается запуск серверов для
-    всех тестов или аннотацией @BeforeEach — если для каждого теста требуется отдельный запуск."
-
-    Я потратил 2 дня в попытках реализовать запуск сервера и создание httpManager'a с запуском клиента, но каждый раз
-    выдает исключение BindException, первый раз создаёт нормально, второй и дальше - ошибка, также метод start()
-    почему-то не видит поля в собственном классе. Я исчерпался, прошу помощи, где ошибка или если её нет, как тогда
-    это реализовать? Лучше наглядный пример, т.к. в гугле ответа найти я не смог.
-
-    Пробовал сделать через нотацию beforeAll, там всё работает, т.к. запуск сервера/клиента идёт через порт один раз,
-    а значит порт всегда свободен. Но тогда почти все тесты надо переписывать, т.к. они учитывают ситуации с пустым
-    менеджером и пустоым файлом/сервером сохранений.
-
-    При проверке через main вся логика работает верно, всё сохраняется и всё загружается, проблема только в тестах
-    и в нотации beforeEach, которая конфликтует с занятым портом, хоть в afterAll и прописан метод, вызывающий
-    server.stop(0);
+        Какая же это была простая ошибка, ведь нельзя вывести в консоль, если консоль = null, меня просто сбило, что
+        выходило очень много ошибок связанных с портом и я пытался решить сначала этот вопрос, ну зато теперь навсегда
+        запомню этот кейс xD
+        Спасибо большое за помощь!:)
+        Я в итоге заменил null на другой сис.аут и всё сработало, да ещё и часть тестов тоже сами исправились, т.к.
+        консоль по факту обновляется ещё раз после создания сервера)
+        Ещё вопрос, в пачку можно писать раз за спринт или, если я ни разу там не связывался, можно всё же пару раз?)
     */
-
     @Override
     @BeforeEach
     public void beforeEach() throws IOException {
-        output = new ByteArrayOutputStream();
         kvServer = new KVServer();
         kvServer.start();
-        manager = new HttpTasksManager("http://localhost:8080");
+        manager = Managers.getDefault();
+        output = new ByteArrayOutputStream();
         System.setOut(new PrintStream(output));
     }
 
@@ -77,6 +68,9 @@ class HttpTasksManagerTest extends FileBackedTasksManagerTest {
     @Override
     @Test
     public void shouldSaveAndBackupAllInfo() {
+        Epic testEpic = new Epic("Test epic", "Test epic description", TaskStatus.NEW);
+        manager.add(testEpic);
+        manager.removeTaskById(testEpic.getId());
         httpManager = HttpTasksManager.loadFromUrl("http://localhost:8080");
         if (manager.getAllRegularTasks() == null || manager.getAllRegularTasks() == null) {
             Assertions.assertNull(manager.getAllRegularTasks());
@@ -98,5 +92,14 @@ class HttpTasksManagerTest extends FileBackedTasksManagerTest {
             Assertions.assertArrayEquals(manager.getAllSubTasks().toArray(), manager.getAllSubTasks().toArray());
         }
         Assertions.assertArrayEquals(manager.getHistory().toArray(), manager.getHistory().toArray());
+    }
+
+    @Override
+    public void shouldReturnNullAndPrintMessageIfEpicWasDeleted() {
+        Epic firstEpic = new Epic("Test epic 1", "Test epic 1 description", TaskStatus.NEW);
+        manager.add(firstEpic);
+        manager.removeTaskById(firstEpic.getId());
+        System.setOut(new PrintStream(new ByteArrayOutputStream()));
+        Assertions.assertNull(manager.getEpicSubtasks(firstEpic.getId()));
     }
 }
